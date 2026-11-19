@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/album", "destination": "/api/album-page" },
+    { "source": "/album.html", "destination": "/api/album-page" },
+    { "source": "/access", "destination": "/api/access-page" },
+    { "source": "/admin-album", "destination": "/admin/album.html" },
+    {
+      "source": "/index-nam",
+      "destination": "/api/site?side=nam"
+    },
+    {
+      "source": "/index-gai",
+      "destination": "/api/site?side=gai"
+    },
+    {
+      "source": "/nha-trai",
+      "destination": "/api/site?side=nam"
+    },
+    {
+      "source": "/nha-gai",
+      "destination": "/api/site?side=gai"
+    },
+    {
+      "source": "/style.css",
+      "destination": "/client/style.css"
+    },
+    {
+      "source": "/javascript.js",
+      "destination": "/client/javascript.js"
+    },
+    {
+      "source": "/admin.html",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/admin-nam",
+      "destination": "/admin/index-nam.html"
+    },
+    {
+      "source": "/admin-gai",
+      "destination": "/admin/index-gai.html"
+    },
+    {
+      "source": "/admin.css",
+      "destination": "/admin/admin.css"
+    },
+    {
+      "source": "/admin.js",
+      "destination": "/admin/admin.js"
+    }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
+}

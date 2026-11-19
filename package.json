@@ -1,0 +1,17 @@
+{
+  "name": "wedding-invitation",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Thiệp cưới online + trang quản trị",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node scripts/check-assets.js",
+    "check:vercel": "node --check server.js && node --check src/admin-api.js && node --check src/access-control.js && node --check api/site.js && node --check api/admin-html.js && node --check api/admin-upload.js && node --check api/admin-components.js && node --check api/admin-images.js && node --check api/wall.js && node --check api/telegram.js && node --check api/album-images.js && node --check api/access.js && node --check api/access-page.js && node --check api/album-page.js && node --check api/admin-access.js && node --check api/admin-album.js && node --check api/admin-preview-session.js && node --check client/javascript.js && node --check client/album.js && node --check admin/admin.js && node --check admin/album.js",
+    "build": "node scripts/build-vercel.js"
+  }
+}
