@@ -10,12 +10,12 @@ import { PhotoGallery } from "./PhotoGallery";
 import { GiftBox } from "./GiftBox";
 import { LoveStory } from "./LoveStory";
 import { WeddingScripts } from "./WeddingScripts";
+import { WeddingInteractions } from "./WeddingInteractions";
 import { sides, story } from "./wedding-data";
+import "./WeddingPage.css";
 
 export function WeddingPage() {
   return <>
-    <link rel="stylesheet" href="/demo/wedding.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Montserrat:wght@300;400;500;600&family=Be+Vietnam+Pro:wght@400;500&display=swap" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <div id="lcln-page-loader" className="lcln-page-loader" aria-live="polite" aria-label="Đang tải thiệp" hidden><div className="lcln-loader-track"><span /></div><div className="lcln-loader-chip"><span className="lcln-loader-spinner" aria-hidden="true" /><span className="lcln-loader-label">Đang chuẩn bị thiệp cưới…</span></div></div>
     <script type="application/json" id="lcln-sides" dangerouslySetInnerHTML={{ __html: JSON.stringify(sides).replace(/</g, "\\u003c") }} />
@@ -28,5 +28,6 @@ export function WeddingPage() {
     <canvas id="rainCanvas" width="1231" height="647" />
     <script type="application/json" id="lcln-story-data" dangerouslySetInnerHTML={{ __html: JSON.stringify(story).replace(/</g, "\\u003c") }} />
     <WeddingScripts />
+    <WeddingInteractions />
   </>;
 }

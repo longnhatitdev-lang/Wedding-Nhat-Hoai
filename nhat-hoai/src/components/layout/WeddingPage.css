@@ -24,7 +24,7 @@
 
 html,
 body {
-  font-family: "Playfair Display", serif !important;
+  font-family: var(--font-playfair-display), serif !important;
   overflow-x: hidden;
   max-width: 100%;
   -ms-overflow-style: none;
@@ -2729,8 +2729,8 @@ LIGHTBOX MODAL (ĐA NĂNG: VUỐT & BỘ ĐẾM SỐ ẢNH)
   --lcln-ls-gold-soft:rgba(244,207,122,.55);
   --lcln-ls-cream:#fff1d9;
   --lcln-ls-rose:#ff9bb0;
-  --lcln-ls-serif:"Playfair Display",Georgia,"Times New Roman",serif;
-  --lcln-ls-sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --lcln-ls-serif:var(--font-playfair-display),Georgia,"Times New Roman",serif;
+  --lcln-ls-sans:var(--font-be-vietnam-pro),system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --lcln-ls-ease:cubic-bezier(.22,.8,.25,1);
   --lcln-ls-autoplay:5500ms;
 }
@@ -3027,7 +3027,7 @@ button,a,[role=button]{touch-action:manipulation} /* bỏ độ trễ chạm 300
 #lcln-celebration{position:fixed;inset:0;z-index:999999;display:grid;place-items:center;padding:22px;background:rgba(28,3,8,.56);backdrop-filter:blur(5px);animation:lcln-celebrate-fade .22s ease both}
 .lcln-celebration__box{position:relative;z-index:2;width:min(100%,420px);padding:30px 24px 22px;border:1px solid rgba(244,207,122,.75);border-radius:24px;background:linear-gradient(145deg,#fffaf1,#fff0e7);color:#6e0a06;text-align:center;box-shadow:0 24px 90px #0005;animation:lcln-celebrate-pop .5s cubic-bezier(.2,.85,.2,1.2) both}
 .lcln-celebration__mark{display:grid;place-items:center;width:62px;height:62px;margin:0 auto 16px;border-radius:50%;background:#a01a12;color:#fff;font-size:30px;box-shadow:0 0 0 8px #a01a1214}
-.lcln-celebration__box p{margin:0 auto 20px;font-family:"Be Vietnam Pro",sans-serif;font-size:16px;line-height:1.7;font-weight:600}
+.lcln-celebration__box p{margin:0 auto 20px;font-family:var(--font-be-vietnam-pro),sans-serif;font-size:16px;line-height:1.7;font-weight:600}
 .lcln-celebration__close{border:0;border-radius:999px;background:#8b1510;color:white;padding:10px 28px;font:inherit;cursor:pointer}
 .lcln-celebration__confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .lcln-celebration__piece{position:absolute;top:-30px;width:8px;height:14px;border-radius:2px;background:var(--lcln-piece-color);opacity:0;animation:lcln-piece-fall 2.8s var(--lcln-piece-delay) cubic-bezier(.15,.6,.35,1) forwards;box-shadow:0 1px 3px #0002}
@@ -3044,7 +3044,7 @@ button,a,[role=button]{touch-action:manipulation} /* bỏ độ trễ chạm 300
 .lcln-page-loader[hidden]{display:block;opacity:0;visibility:hidden}
 .lcln-loader-track{position:absolute;top:0;left:0;right:0;height:3px;overflow:hidden;background:rgba(126,18,28,.16);box-shadow:0 1px 12px rgba(164,20,43,.14)}
 .lcln-loader-track span{display:block;width:36%;height:100%;border-radius:999px;background:linear-gradient(90deg,#8a1027,#f4cf7a,#fff2c3,#a01a12);box-shadow:0 0 12px rgba(244,207,122,.85);animation:lcln-loader-run 1.25s cubic-bezier(.45,.05,.55,.95) infinite}
-.lcln-loader-chip{position:absolute;right:max(14px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:10px 14px;border:1px solid rgba(244,207,122,.42);border-radius:999px;background:linear-gradient(135deg,rgba(39,5,12,.92),rgba(94,10,26,.88));color:#fff7e4;font:500 12px/1.25 'Be Vietnam Pro',system-ui,sans-serif;letter-spacing:.15px;box-shadow:0 8px 28px rgba(35,0,8,.2),inset 0 1px rgba(255,255,255,.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:lcln-loader-chip-in .35s ease both}
+.lcln-loader-chip{position:absolute;right:max(14px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:10px 14px;border:1px solid rgba(244,207,122,.42);border-radius:999px;background:linear-gradient(135deg,rgba(39,5,12,.92),rgba(94,10,26,.88));color:#fff7e4;font:500 12px/1.25 var(--font-be-vietnam-pro),system-ui,sans-serif;letter-spacing:.15px;box-shadow:0 8px 28px rgba(35,0,8,.2),inset 0 1px rgba(255,255,255,.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:lcln-loader-chip-in .35s ease both}
 .lcln-loader-spinner{width:15px;height:15px;flex:0 0 15px;border:2px solid rgba(244,207,122,.25);border-top-color:#f4cf7a;border-right-color:#fff0b7;border-radius:50%;animation:lcln-loader-spin .8s linear infinite}
 @keyframes lcln-loader-run{0%{transform:translateX(-120%)}100%{transform:translateX(300%)}}
 @keyframes lcln-loader-spin{to{transform:rotate(360deg)}}
