@@ -1,5 +1,5 @@
-"use client";
 // @ts-nocheck
+"use client";
 import { useEffect } from "react";
 import { renderWeddingDate } from "./wedding-calendar";
 import { applyGiftSettings } from "./gift-settings";
