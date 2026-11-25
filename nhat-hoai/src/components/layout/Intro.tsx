@@ -33,7 +33,7 @@ export function Intro() {
             <div className="lcln-in-couple-divider" />
             <div className="lcln-in-invitation-msg">Kính mời quý khách đến dự tiệc cưới<br />của gia đình chúng tôi</div>
           </div>
-          <div className="lcln-in-front-tap-hint">Nhấn giữ 3 giây để mở thiệp</div>
+          <div className="lcln-in-front-tap-hint">Nhấn để mở thiệp</div>
           <div className="lcln-in-hold-glow" id="lcln-in-holdGlow" />
         </div>
         <div className="lcln-in-invitation-face lcln-in-invitation-back-side">

@@ -11,7 +11,7 @@ import * as schema from "../src/lib/db/schema/auth";
 const SEED_USER = {
   name: "Admin",
   username: "admin",
-  password: "Admin@123456",
+  password: "admin123",
 };
 
 async function main() {

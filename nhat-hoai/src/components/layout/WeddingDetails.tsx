@@ -1,5 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-export function WeddingDetails() {
+import { WeddingCalendar } from "./WeddingCalendar";
+import { sides } from "./wedding-data";
+
+export function WeddingDetails({ date = sides.trai.date }: { date?: string }) {
   return (
 <section className="section_four">
   <div className="container_content-bg">
@@ -49,17 +52,7 @@ export function WeddingDetails() {
       </div>
     </div>
   </div>
-  <div className="calendar-card" data-month="02" data-year={2027} data-wedding-day="01">
-    
-    <div className="calendar-header">
-      <span className="month">Tháng 2</span>
-      <span className="year">2027</span>
-    </div>
-    
-    <div className="calendar-grid">
-      <span className="day-name wedding-day">Thứ 2</span><span className="day-name">Thứ 3</span><span className="day-name">Thứ 4</span><span className="day-name">Thứ 5</span><span className="day-name">Thứ 6</span><span className="day-name">Thứ 7</span><span className="day-name">CN</span><span className="day-item wedding-day">1</span><span className="day-item">2</span><span className="day-item">3</span><span className="day-item">4</span><span className="day-item">5</span><span className="day-item">6</span><span className="day-item">7</span><span className="day-item">8</span><span className="day-item">9</span><span className="day-item">10</span><span className="day-item">11</span><span className="day-item">12</span><span className="day-item">13</span><span className="day-item">14</span><span className="day-item">15</span><span className="day-item">16</span><span className="day-item">17</span><span className="day-item">18</span><span className="day-item">19</span><span className="day-item">20</span><span className="day-item">21</span><span className="day-item">22</span><span className="day-item">23</span><span className="day-item">24</span><span className="day-item">25</span><span className="day-item">26</span><span className="day-item">27</span><span className="day-item">28</span>
-    </div>
-  </div>
+  <WeddingCalendar key={date} date={date} />
 </section>
 
   );

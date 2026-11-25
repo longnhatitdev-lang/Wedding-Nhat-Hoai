@@ -462,13 +462,12 @@ async function dl(id, name, btn) {
 }
 
 // ==========================================
-// INTRO THIỆP: nhấn giữ 3 giây -> lật thẻ -> mở phong bì -> rèm -> vào thiệp
+// INTRO THIỆP: nhấn để lật thẻ -> mở phong bì -> rèm -> vào thiệp
 // ==========================================
 (() => {
 'use strict';
 const intro = document.getElementById('lcln-in-weddingIntro');
 if (!intro) return;
-const HOLD_TIME = 3000;
 const isMobile = matchMedia('(max-width:600px), (pointer:coarse)').matches;
 const rand = (a, b) => Math.random() * (b - a) + a;
 const pick = arr => arr[(Math.random() * arr.length) | 0];
@@ -561,39 +560,11 @@ function sparkleLoop() {
 function startSparkles() { resizeSparkle(); addEventListener('resize', resizeSparkle); sparkles = Array.from({ length: isMobile ? 28 : 60 }, () => newSparkle(true)); sparkleLoop(); }
 function stopSparkles() { cancelAnimationFrame(sparkRaf); removeEventListener('resize', resizeSparkle); }
 
-// Nhấn giữ để mở
-let holding = false, opened = false, exiting = false, t0 = 0, lastHeart = 0, px = 0, py = 0, raf = 0, lastY = -1;
-function tick(now) {
-    if (!holding) return;
-    const p = Math.min((now - t0) / HOLD_TIME, 1), y = +(70 - p * 70).toFixed(1);
-    if (y !== lastY) { water.style.transform = `translate3d(0,${y}px,0)`; holdGlow.style.opacity = (p * .9).toFixed(2); lastY = y; }
-    if (now - lastHeart >= (isMobile ? 140 : 100)) { spawnHeart(px, py); lastHeart = now; }
-    if (p >= 1) { openCard(); return; }
-    raf = requestAnimationFrame(tick);
-}
-function startHold(e) {
-    if (opened) return;
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    e.preventDefault();
-    holding = true; t0 = performance.now(); lastHeart = 0; lastY = -1; px = e.clientX; py = e.clientY;
-    water.style.transition = 'none';
-    heartBurst(px, py, 3);
-    if (navigator.vibrate) navigator.vibrate(12);
-    try { flipWrapper.setPointerCapture(e.pointerId); } catch (_) {}
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(tick);
-}
-function moveHold(e) { if (!holding) return; px = e.clientX; py = e.clientY; }
-function cancelHold() {
-    if (!holding || opened) return;
-    holding = false; cancelAnimationFrame(raf);
-    water.style.transition = 'transform .4s cubic-bezier(.25,1,.5,1)';
-    water.style.transform = 'translate3d(0,70px,0)';
-    holdGlow.style.opacity = 0;
-}
+// Nhấn để mở
+let opened = false, exiting = false, px = 0, py = 0;
 async function openCard() {
     if (opened) return;
-    opened = true; holding = false; cancelAnimationFrame(raf);
+    opened = true;
     water.style.transition = 'none'; water.style.transform = 'translate3d(0,0,0)'; holdGlow.style.opacity = 1;
     heartBurst(px, py, isMobile ? 14 : 24);
     if (navigator.vibrate) navigator.vibrate([20, 40, 30]);
@@ -640,14 +611,15 @@ insideCard.addEventListener('click', e => {
     if (window.lclnGoSide) window.lclnGoSide(b.dataset.side); // sang trang nhà trai / nhà gái
     exitIntro();                                               // rồi đóng intro
 });
-flipWrapper.addEventListener('pointerdown', startHold);
-flipWrapper.addEventListener('pointermove', moveHold);
-flipWrapper.addEventListener('pointerup', cancelHold);
-flipWrapper.addEventListener('pointercancel', cancelHold);
-flipWrapper.addEventListener('contextmenu', e => e.preventDefault());
+flipWrapper.addEventListener('click', e => {
+    if (opened) return;
+    const rect = flipWrapper.getBoundingClientRect();
+    px = e.detail ? e.clientX : rect.left + rect.width / 2;
+    py = e.detail ? e.clientY : rect.top + rect.height / 2;
+    openCard();
+});
 document.addEventListener('visibilitychange', () => {
     document.documentElement.classList.toggle('lcln-in-paused', document.hidden);
-    if (document.hidden && holding) cancelHold();
 });
 })();
 

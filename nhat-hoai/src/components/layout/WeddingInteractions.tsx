@@ -1,6 +1,9 @@
 "use client";
 // @ts-nocheck
 import { useEffect } from "react";
+import { renderWeddingDate } from "./wedding-calendar";
+import { applyGiftSettings } from "./gift-settings";
+import { applyWeddingTexts } from "./editable-text";
 
 /** Mounts the wedding animations and DOM interactions after the invitation has rendered. */
 export function WeddingInteractions() {
@@ -81,108 +84,6 @@ export function WeddingInteractions() {
         observer.observe(document.documentElement, { childList: true, subtree: true });
       }
     })();
-    
-    // ==========================================
-    // XỬ LÝ NHẠC NỀN (AUTOPLAY + TẮT KHI RỜI TRANG)
-    // ==========================================
-    onWeddingReady( function () {
-      const audio = document.getElementById("my_audio");
-      const audioPlayBtn = document.getElementById("audio_play");
-      const wrap = document.getElementById("wrap");
-    
-      if (!audio) return;
-    
-      let isManuallyPaused = false; // Cờ kiểm tra người dùng có cố tình bấm dừng nhạc không
-    
-      // Hàm phát nhạc
-      function playAudio() {
-        if (audio.paused && !isManuallyPaused) {
-          audio
-            .play()
-            .then(() => {
-              if (audioPlayBtn) audioPlayBtn.classList.add("playing");
-              removeGlobalUnlockEvents();
-            })
-            .catch((error) => console.log("Lỗi phát nhạc:", error));
-        }
-      }
-    
-      // Hàm tạm dừng nhạc
-      function pauseAudio() {
-        if (!audio.paused) {
-          audio.pause();
-          if (audioPlayBtn) audioPlayBtn.classList.remove("playing");
-        }
-      }
-    
-      // 1. Kích hoạt nhạc KHI BẤM MỞ THIỆP
-      if (wrap) {
-        wrap.addEventListener("click", () => {
-          isManuallyPaused = false;
-          playAudio();
-        });
-      }
-    
-      // 2. Dự phòng: Mở nhạc khi có tương tác đầu tiên trên trang
-      function unlockAudioOnInteraction() {
-        playAudio();
-      }
-    
-      function addGlobalUnlockEvents() {
-        ["pointerdown", "touchstart", "click"].forEach((evt) => {
-          document.addEventListener(evt, unlockAudioOnInteraction, {
-            once: true,
-            capture: true,
-          });
-        });
-      }
-    
-      function removeGlobalUnlockEvents() {
-        ["pointerdown", "touchstart", "click"].forEach((evt) => {
-          document.removeEventListener(evt, unlockAudioOnInteraction, {
-            capture: true,
-          });
-        });
-      }
-    
-      addGlobalUnlockEvents();
-    
-      // 3. Nút Bật/Tắt nhạc trực tiếp
-      if (audioPlayBtn) {
-        audioPlayBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          if (audio.paused) {
-            isManuallyPaused = false;
-            playAudio();
-          } else {
-            isManuallyPaused = true; // Người dùng chủ động tắt -> Không tự phát lại khi chuyển tab
-            pauseAudio();
-          }
-        });
-      }
-    
-      // =========================================================
-      // XỬ LÝ TẮT NHẠC KHI RỜI TRANG / THOÁT TAB / KHÓA MÀN HÌNH
-      // =========================================================
-    
-      // A. Khi ẩn/hiện Tab (Page Visibility API)
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          pauseAudio(); // Ẩn tab / Rời trang -> Tắt nhạc
-        } else {
-          playAudio(); // Quay lại tab -> Tự phát tiếp (nếu trước đó không bấm tắt thủ công)
-        }
-      });
-    
-      // B. Dự phòng khi chuyển cửa sổ trình duyệt (Window Blur / Focus)
-      window.addEventListener("blur", pauseAudio);
-      window.addEventListener("focus", () => {
-        if (!document.hidden) playAudio();
-      });
-    
-      // C. Tắt nhạc triệt để khi đóng hẳn trang hoặc chuyển hướng link
-      window.addEventListener("pagehide", pauseAudio);
-    });
     
     // Đếm ngược ngày cưới
     // Countdown — đọc lại data-wedding-date MỖI giây để sửa trực tiếp từ
@@ -470,13 +371,12 @@ export function WeddingInteractions() {
     }
     
     // ==========================================
-    // INTRO THIỆP: nhấn giữ 3 giây -> lật thẻ -> mở phong bì -> rèm -> vào thiệp
+    // INTRO THIỆP: nhấn để lật thẻ -> mở phong bì -> rèm -> vào thiệp
     // ==========================================
     (() => {
     'use strict';
     const intro = document.getElementById('lcln-in-weddingIntro');
     if (!intro) return;
-    const HOLD_TIME = 3000;
     const isMobile = matchMedia('(max-width:600px), (pointer:coarse)').matches;
     const rand = (a, b) => Math.random() * (b - a) + a;
     const pick = arr => arr[(Math.random() * arr.length) | 0];
@@ -569,39 +469,11 @@ export function WeddingInteractions() {
     function startSparkles() { resizeSparkle(); addEventListener('resize', resizeSparkle); sparkles = Array.from({ length: isMobile ? 28 : 60 }, () => newSparkle(true)); sparkleLoop(); }
     function stopSparkles() { cancelAnimationFrame(sparkRaf); removeEventListener('resize', resizeSparkle); }
     
-    // Nhấn giữ để mở
-    let holding = false, opened = false, exiting = false, t0 = 0, lastHeart = 0, px = 0, py = 0, raf = 0, lastY = -1;
-    function tick(now) {
-        if (!holding) return;
-        const p = Math.min((now - t0) / HOLD_TIME, 1), y = +(70 - p * 70).toFixed(1);
-        if (y !== lastY) { water.style.transform = `translate3d(0,${y}px,0)`; holdGlow.style.opacity = (p * .9).toFixed(2); lastY = y; }
-        if (now - lastHeart >= (isMobile ? 140 : 100)) { spawnHeart(px, py); lastHeart = now; }
-        if (p >= 1) { openCard(); return; }
-        raf = requestAnimationFrame(tick);
-    }
-    function startHold(e) {
-        if (opened) return;
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        e.preventDefault();
-        holding = true; t0 = performance.now(); lastHeart = 0; lastY = -1; px = e.clientX; py = e.clientY;
-        water.style.transition = 'none';
-        heartBurst(px, py, 3);
-        if (navigator.vibrate) navigator.vibrate(12);
-        try { flipWrapper.setPointerCapture(e.pointerId); } catch (_) {}
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(tick);
-    }
-    function moveHold(e) { if (!holding) return; px = e.clientX; py = e.clientY; }
-    function cancelHold() {
-        if (!holding || opened) return;
-        holding = false; cancelAnimationFrame(raf);
-        water.style.transition = 'transform .4s cubic-bezier(.25,1,.5,1)';
-        water.style.transform = 'translate3d(0,70px,0)';
-        holdGlow.style.opacity = 0;
-    }
+    // Nhấn để mở
+    let opened = false, exiting = false, px = 0, py = 0;
     async function openCard() {
         if (opened) return;
-        opened = true; holding = false; cancelAnimationFrame(raf);
+        opened = true;
         water.style.transition = 'none'; water.style.transform = 'translate3d(0,0,0)'; holdGlow.style.opacity = 1;
         heartBurst(px, py, isMobile ? 14 : 24);
         if (navigator.vibrate) navigator.vibrate([20, 40, 30]);
@@ -638,7 +510,6 @@ export function WeddingInteractions() {
         intro.remove(); curtain.remove(); heartLayer.remove();
         body.classList.add('lcln-ready');                      // hiện thanh menu nhà trai/nhà gái
         if (window.lclnWall) window.lclnWall.start();          // bắt đầu tự cuộn lời chúc
-        if (window.startAutoScroll) window.startAutoScroll();  // tự cuộn trang
     }
     
     insideCard.addEventListener('click', e => {
@@ -648,14 +519,15 @@ export function WeddingInteractions() {
         if (window.lclnGoSide) window.lclnGoSide(b.dataset.side); // sang trang nhà trai / nhà gái
         exitIntro();                                               // rồi đóng intro
     });
-    flipWrapper.addEventListener('pointerdown', startHold);
-    flipWrapper.addEventListener('pointermove', moveHold);
-    flipWrapper.addEventListener('pointerup', cancelHold);
-    flipWrapper.addEventListener('pointercancel', cancelHold);
-    flipWrapper.addEventListener('contextmenu', e => e.preventDefault());
+    flipWrapper.addEventListener('click', e => {
+        if (opened) return;
+        const rect = flipWrapper.getBoundingClientRect();
+        px = e.detail ? e.clientX : rect.left + rect.width / 2;
+        py = e.detail ? e.clientY : rect.top + rect.height / 2;
+        openCard();
+    });
     document.addEventListener('visibilitychange', () => {
         document.documentElement.classList.toggle('lcln-in-paused', document.hidden);
-        if (document.hidden && holding) cancelHold();
     });
     })();
     
@@ -1140,109 +1012,6 @@ export function WeddingInteractions() {
       });
     })();
     
-    // Tự cuộn trang: tạm dừng khi chạm, click, nhập liệu hoặc mở chức năng; tiếp tục theo chiều vuốt.
-    (function () {
-      let raf = 0;
-      let velocity = 0.85;
-      let direction = 1;
-      let touching = false;
-      let lastY = 0;
-      let lastTime = 0;
-      let idleTimer = 0;
-      let pausedByFocus = false;
-      const BASE = 0.72;
-    
-      const hasOpenLayer = () => !!document.querySelector(
-        '#js-modal-rsvp:not(.is-hidden),#js-modal-profile:not(.is-hidden),#qrModal.show,#imageViewerModal.is-active,.lightbox-modal.is-active,#js-wedding-widget.open-main,#js-wedding-widget.open-share,#js-wedding-widget.open-contact,#lcln-celebration'
-      );
-      const hasFocusedField = () => {
-        const a = document.activeElement;
-        return !!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
-      };
-      function stop() {
-        if (raf) cancelAnimationFrame(raf);
-        raf = 0;
-      }
-      function loop() {
-        raf = 0;
-        if (!window.isPageActive || touching || pausedByFocus || hasOpenLayer() || hasFocusedField()) return;
-        const root = document.documentElement;
-        const max = Math.max(0, root.scrollHeight - window.innerHeight);
-        const y = window.scrollY || root.scrollTop;
-        if ((direction > 0 && y >= max - 1) || (direction < 0 && y <= 0) || max < 2) return;
-        if (Math.abs(velocity) < BASE) velocity = BASE * direction;
-        window.scrollBy(0, velocity);
-        raf = requestAnimationFrame(loop);
-      }
-      function start() {
-        if (!raf && !touching && !pausedByFocus && !hasOpenLayer() && !hasFocusedField()) {
-          if (Math.abs(velocity) < BASE) velocity = BASE * direction;
-          raf = requestAnimationFrame(loop);
-        }
-      }
-      function pause(delay = 1800) {
-        stop();
-        if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => {
-          if (!touching && !pausedByFocus && !hasOpenLayer() && !hasFocusedField()) start();
-        }, delay);
-      }
-      window.startAutoScroll = start;
-      window.resumePageScroll = start;
-      window.stopAutoScroll = stop;
-    
-      window.addEventListener('touchstart', (e) => {
-        touching = true;
-        stop();
-        if (idleTimer) clearTimeout(idleTimer);
-        lastY = e.touches[0]?.clientY ?? 0;
-        lastTime = performance.now();
-      }, { passive: true });
-      window.addEventListener('touchmove', (e) => {
-        if (!touching || !e.touches[0]) return;
-        const y = e.touches[0].clientY;
-        const now = performance.now();
-        const dy = lastY - y;
-        const dt = Math.max(1, now - lastTime);
-        if (Math.abs(dy) > 1) {
-          direction = dy > 0 ? 1 : -1;
-          velocity = Math.max(BASE, Math.min(5, Math.abs(dy / dt * 16))) * direction;
-        }
-        lastY = y;
-        lastTime = now;
-      }, { passive: true });
-      window.addEventListener('touchend', () => {
-        touching = false;
-        if (Math.abs(velocity) < BASE) velocity = BASE * direction;
-        pause(1900);
-      }, { passive: true });
-      window.addEventListener('touchcancel', () => { touching = false; pause(1900); }, { passive: true });
-      window.addEventListener('wheel', (e) => {
-        if (Math.abs(e.deltaY) > 1) {
-          direction = e.deltaY > 0 ? 1 : -1;
-          velocity = Math.max(BASE, Math.min(4, Math.abs(e.deltaY) * .12)) * direction;
-        }
-        pause(1500);
-      }, { passive: true });
-      document.addEventListener('pointerdown', () => pause(2000), { passive: true });
-      document.addEventListener('click', () => pause(2000), { passive: true });
-      document.addEventListener('focusin', (e) => {
-        if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
-          pausedByFocus = true;
-          stop();
-        }
-      });
-      document.addEventListener('focusout', () => {
-        setTimeout(() => {
-          pausedByFocus = hasFocusedField();
-          if (!pausedByFocus) pause(1200);
-        }, 80);
-      });
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stop();
-        else pause(800);
-      });
-    })();
     // ==========================================
     //  ĐÓNG BĂNG TOÀN BỘ HIỆU ỨNG KHÔNG CHẠY NGẦM
     // ==========================================
@@ -1268,8 +1037,6 @@ export function WeddingInteractions() {
     
         // Khôi phục vòng lặp JS
         if (typeof window.resumeRain === "function") window.resumeRain();
-        if (typeof window.resumePageScroll === "function")
-          window.resumePageScroll();
     
         if (typeof window.resumeAppLoops === "function") {
           window.resumeAppLoops();
@@ -1857,9 +1624,6 @@ export function WeddingInteractions() {
       const intro = document.getElementById("lcln-in-weddingIntro");
       const PATH = { trai: "/", gai: "/nha-gai" };
       const $ = (s) => document.querySelector(s);
-      const WD = ["chủ nhật", "thứ hai", "thứ ba", "thứ tư", "thứ năm", "thứ sáu", "thứ bảy"];
-      const DN = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN"];
-      const pad = (n) => String(n).padStart(2, "0");
       const readCfg = () => { try { return JSON.parse(cfgEl.textContent); } catch (e) { return {}; } };
       const fromPath = () => {
         const p = location.pathname.replace(/\/+$/, "");
@@ -1870,33 +1634,7 @@ export function WeddingInteractions() {
       function apply(side) {
         current = side;
         const c = readCfg()[side] || {};
-        if (c.date) {
-          const [y, m, d] = c.date.split("-").map(Number);
-          const time = c.time || "00:00", [h, mi] = time.split(":");
-          const cd = $(".countdown-card");
-          if (cd) cd.dataset.weddingDate = `${c.date}T${time}`; // đếm ngược đọc lại mỗi giây
-          const wd = (new Date(y, m - 1, d).getDay() + 6) % 7;
-          const off = (new Date(y, m - 1, 1).getDay() + 6) % 7;
-          const n = new Date(y, m, 0).getDate();
-          const cal = $(".calendar-card");
-          if (cal) {
-            Object.assign(cal.dataset, { month: pad(m), year: y, weddingDay: pad(d) });
-            cal.querySelector(".month").textContent = "Tháng " + m;
-            cal.querySelector(".year").textContent = y;
-            cal.querySelector(".calendar-grid").innerHTML =
-              DN.map((x, i) => `<span class="day-name${i == wd ? " wedding-day" : ""}">${x}</span>`).join("") +
-              '<span class="day-item" style="visibility:hidden"></span>'.repeat(off) +
-              Array.from({ length: n }, (_, i) => `<span class="day-item${i + 1 == d ? " wedding-day" : ""}">${i + 1}</span>`).join("");
-          }
-          const th = $(".thu-gio");
-          if (th) { th.children[0].textContent = WD[(wd + 1) % 7]; th.children[1].textContent = `${h} giờ ${mi}`; }
-          const ng = $(".ngay");
-          if (ng) {
-            ng.children[0].textContent = pad(d);
-            const s = ng.querySelectorAll(".thang span");
-            s[0].textContent = "Tháng " + m; s[1].textContent = y;
-          }
-        }
+        if (c.date) renderWeddingDate(c.date, c.time || "00:00");
         const lp = $(".date-top>p:last-child");
         if (lp && c.lunar != null) lp.textContent = c.lunar;
         const ad = $(".address");
@@ -1909,6 +1647,8 @@ export function WeddingInteractions() {
           if (e && fr.getAttribute("src") !== e) fr.src = e;
         }
         if (nav) nav.querySelectorAll("a").forEach((a) => a.classList.toggle("on", a.dataset.side === side));
+        applyWeddingTexts(c.texts);
+        applyGiftSettings(c.gifts);
         document.documentElement.dataset.side = side;
       }
       window.lclnApplySide = apply; // trang admin dùng để xem trước từng nhà

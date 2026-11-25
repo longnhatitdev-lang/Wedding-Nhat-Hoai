@@ -25,15 +25,10 @@
 html,
 body {
   font-family: var(--font-playfair-display), serif !important;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
   background-color: #a90404;
   color: white;
-}
-html::-webkit-scrollbar {
-  display: none;
 }
 
 section {
@@ -260,6 +255,9 @@ iframe {
 
 #audio_play {
   position: fixed;
+  border: 0;
+  padding: 0;
+  background: transparent;
   top: 10px;
   right: 10px;
   z-index: 15;
@@ -2928,8 +2926,8 @@ body:not(.lcln-ready) .lcln-sidenav{display:none}
 .lcln-sidenav a{flex:0 1 170px;text-align:center;padding:8px 12px;border-radius:20px;color:#ffe9b0;text-decoration:none;font:600 14px system-ui,sans-serif;border:1px solid #ffe9b066}
 .lcln-sidenav a.on{background:#ffe9b0;color:#7a0a0a;border-color:#ffe9b0}
 
-/* ===== LỜI CHÚC: không cuộn lan ra nội dung thiệp ===== */
-.wall-list{overscroll-behavior:contain;touch-action:pan-y;overflow-x:hidden}
+/* Cho phép tiếp tục cuộn trang khi danh sách lời chúc chạm mép. */
+.wall-list{overscroll-behavior:auto;touch-action:pan-y;overflow-x:hidden}
 .wall-message--mine{animation:lclnMine 1.4s ease 3}
 @keyframes lclnMine{0%,100%{box-shadow:0 0 0 0 #ffd54f00}50%{box-shadow:0 0 0 4px #ffd54f}}
 
@@ -3108,7 +3106,7 @@ img{ -webkit-user-drag:none }
   .lightbox-nav{width:42px;height:42px}
   .wedding-comment-bar{max-width:calc(100% - 24px);left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom))}
   #toggleWallBtn{min-height:42px;max-width:calc(100vw - 24px)}
-  .wall-list{height:min(42vh,360px);max-height:min(42vh,360px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .wall-list{height:min(42vh,360px);max-height:min(42vh,360px);-webkit-overflow-scrolling:touch}
   #lcln-celebration{padding:18px;padding-bottom:max(18px,env(safe-area-inset-bottom))}
   #lcln-celebration .lcln-celebration__box{width:min(100%,360px);padding:24px 18px;border-radius:20px}
   #lcln-celebration .lcln-celebration__close{min-height:46px;min-width:110px}
@@ -3127,3 +3125,32 @@ img{ -webkit-user-drag:none }
  :where(button,.wedding-btn,.sub-item,.radial-item,.widget-main-btn,#toggleWallBtn){transition:none!important}
  .gallery-grid__image{transition:none!important}
 }
+
+/* Chỉ áp dụng bên trong khung xem trước của quản trị. */
+body.wedding-preview .wedding-comment-bar,
+body.wedding-preview .wall-list,
+body.wedding-preview #toggleWallBtn,
+body.wedding-preview .wedding-widget-wrapper,
+body.wedding-preview .wedding-modal,
+body.wedding-preview #lcln-side-nav,
+body.wedding-preview #rainCanvas { display: none !important; }
+body.wedding-preview main a,
+body.wedding-preview main button:not([data-edit-key]),
+body.wedding-preview main iframe { pointer-events: none; }
+body.wedding-preview [data-edit-key] { cursor: text; outline: 1px dashed #f8d6a3; outline-offset: 4px; }
+body.wedding-preview [data-edit-key]:focus { outline: 2px solid #ffdf87; background: #64101a99; }
+body.wedding-preview [data-edit-key]:empty::before { content: attr(data-placeholder); opacity: .7; }
+.preview-toolbar { position: fixed; z-index: 1000000; right: 12px; bottom: 12px; left: 12px; max-width: 700px; margin: auto; padding: 12px; border: 1px solid #eadfd8; border-radius: 12px; background: #fffaf7; color: #341820; box-shadow: 0 8px 30px #0005; font: 14px/1.4 Arial, sans-serif; }
+.preview-toolbar__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.preview-toolbar button { flex-shrink: 0; padding: 10px 16px; border: 0; border-radius: 8px; background: #6c1d2e; color: white; font-weight: 700; cursor: pointer; }
+.preview-toolbar button:disabled { opacity: .6; cursor: wait; }
+.preview-toolbar details { margin-top: 8px; }
+.preview-toolbar summary { cursor: pointer; }
+.preview-toolbar__fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-top: 8px; }
+.preview-toolbar__fields label { display: grid; gap: 3px; font-size: 12px; }
+.preview-toolbar__fields input { width: 100%; padding: 6px; border: 1px solid #dfd0ca; border-radius: 5px; color: #341820; background: white; }
+.preview-toolbar p { margin: 8px 0 0; }
+.preview-toolbar { max-height: min(75vh, 650px); overflow-y: auto; }
+.preview-gift { margin-top: 10px; padding: 8px; border: 1px solid #dfd0ca; border-radius: 8px; }
+.preview-gift legend { padding: 0 5px; font-weight: 700; }
+.preview-gift__qr { display: block; width: 96px; height: 96px; margin-top: 8px; object-fit: contain; background: white; }

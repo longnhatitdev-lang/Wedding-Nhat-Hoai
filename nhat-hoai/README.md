@@ -10,6 +10,7 @@
    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/longnhat
    BETTER_AUTH_URL=http://localhost:3000
    BETTER_AUTH_SECRET=<chuoi-ngau-nhien-it-nhat-32-ky-tu>
+   CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
    ```
 
    Có thể tạo secret bằng `openssl rand -hex 32`. Giữ secret và thông tin kết nối ở server.
@@ -18,7 +19,7 @@
 
 Thiệp nhà trai ở `/`, thiệp nhà gái ở `/nha-gai`, album ở `/album`. Lời chúc và xác nhận tham dự được lưu trong bảng `wedding_wishes` thông qua server action.
 
-Trang quản trị bắt đầu tại `/admin` và yêu cầu đăng nhập qua `/admin/login`. Các mục `/admin/nha-trai`, `/admin/nha-gai` quản lý thông tin buổi lễ; `/admin/album` cho phép thêm ảnh bằng đường dẫn hoặc tải ảnh JPEG, PNG, WebP tối đa 4 MB, chỉnh chú thích và sắp xếp ảnh. Ảnh tải lên được lưu trong PostgreSQL; xóa ảnh khỏi danh sách album không xóa tệp gốc. Trước khi có cấu hình được lưu, thiệp và album dùng dữ liệu mẫu trong source.
+Trang quản trị bắt đầu tại `/admin` và yêu cầu đăng nhập qua `/admin/login`. Các mục `/admin/nha-trai`, `/admin/nha-gai` quản lý thông tin buổi lễ; `/admin/album` cho phép thêm ảnh bằng đường dẫn hoặc tải ảnh JPEG, PNG, WebP tối đa 4 MB, chỉnh chú thích và sắp xếp ảnh. Ảnh album và mã QR mới được tải lên Cloudinary bằng `CLOUDINARY_URL` trên server. Lấy giá trị này trong Cloudinary Console → Settings → API Keys; không đưa API secret vào mã nguồn hoặc biến `NEXT_PUBLIC_`. Ảnh đã lưu trong PostgreSQL vẫn truy cập được; xóa ảnh khỏi danh sách album không xóa tệp gốc trên Cloudinary. Trước khi có cấu hình được lưu, thiệp và album dùng dữ liệu mẫu trong source.
 
 Nếu cần nhận thông báo Telegram, thêm `TELEGRAM_BOT_TOKEN` và `TELEGRAM_CHAT_ID` vào môi trường server. Việc gửi thông báo không ảnh hưởng đến việc lưu lời chúc.
 
